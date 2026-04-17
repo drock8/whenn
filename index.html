@@ -174,7 +174,7 @@
     cursor: pointer; opacity: 0; transition: opacity 0.15s;
     pointer-events: auto;
   }
-  .city-label:hover .cl-remove { opacity: 1; }
+  @media (hover: hover) { .city-label:hover .cl-remove { opacity: 1; } }
   .city-label.show-remove .cl-remove { opacity: 1; }
 
   /* ── Reverse lookup (hover-to-convert) ── */
@@ -953,35 +953,45 @@ function attachHoverHandlers() {
         deactivateReverse(el);
       });
     } else {
+      let longPressTimer = null;
+      let didLongPress = false;
+      el.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.cl-reverse-input') || e.target.closest('.cl-remove')) return;
+        didLongPress = false;
+        longPressTimer = setTimeout(() => {
+          didLongPress = true;
+          navigator.vibrate && navigator.vibrate(30);
+          labels.forEach(other => {
+            other.classList.remove('show-remove');
+            deactivateReverse(other);
+          });
+          el.classList.add('show-remove');
+          el.classList.add('reverse-active');
+          activeReverseLabel = el;
+        }, 500);
+      }, { passive: true });
+      el.addEventListener('touchmove', () => {
+        clearTimeout(longPressTimer);
+      }, { passive: true });
+      el.addEventListener('touchend', () => {
+        clearTimeout(longPressTimer);
+      }, { passive: true });
       el.addEventListener('click', (e) => {
         if (e.target.closest('.cl-reverse-input')) return;
         const removeBtn = el.querySelector('.cl-remove');
         if (e.target === removeBtn || removeBtn.contains(e.target)) return;
+        if (didLongPress) { didLongPress = false; return; }
         e.stopPropagation();
-        const wasReverse = el.classList.contains('reverse-active');
-        const wasRemove = el.classList.contains('show-remove');
+        const wasActive = el.classList.contains('reverse-active');
         labels.forEach(other => {
           other.classList.remove('show-remove');
           deactivateReverse(other);
         });
-        if (!wasReverse) {
-          // First tap: show reverse input only
+        if (!wasActive) {
           activeReverseLabel = el;
           el.classList.add('reverse-active');
           const input = el.querySelector('.cl-reverse-input');
           if (input) setTimeout(() => input.focus(), 100);
-        } else if (!wasRemove) {
-          // Second tap (no time entered): show delete icon
-          const input = el.querySelector('.cl-reverse-input');
-          if (!input || !input.value.trim()) {
-            el.classList.add('show-remove');
-            activeReverseLabel = el;
-            el.classList.add('reverse-active');
-          } else {
-            // Input has value, keep reverse active
-            activeReverseLabel = el;
-            el.classList.add('reverse-active');
-          }
         }
       });
     }
