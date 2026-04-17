@@ -841,7 +841,15 @@ mapWrap.addEventListener('touchmove', (e) => {
     updateViewBox();
   }
 }, { passive: false });
-mapWrap.addEventListener('touchend', () => { touchStart = null; touchDist = null; });
+mapWrap.addEventListener('touchend', (e) => {
+  touchStart = null; touchDist = null;
+  if (!e.target.closest('.city-label')) {
+    labelsContainer.querySelectorAll('.city-label.show-remove').forEach(el => {
+      el.classList.remove('show-remove');
+      deactivateReverse(el);
+    });
+  }
+});
 
 // Double-click to reset zoom
 mapWrap.addEventListener('dblclick', (e) => {
@@ -928,21 +936,17 @@ function attachHoverHandlers() {
       if (input) setTimeout(() => input.focus(), 50);
     });
     el.addEventListener('mouseleave', (e) => {
-      // Don't deactivate if focus is still inside (user is typing)
       if (el.contains(document.activeElement) && document.activeElement.classList.contains('cl-reverse-input')) return;
+      if (el.classList.contains('show-remove')) return;
       deactivateReverse(el);
     });
-    // Mobile: tap label to show remove button + reverse input, tap remove to delete
-    el.addEventListener('touchend', (e) => {
+    // Mobile: tap label to show remove button + reverse input
+    el.addEventListener('click', (e) => {
+      if (!('ontouchstart' in window)) return;
       if (e.target.closest('.cl-reverse-input')) return;
       const removeBtn = el.querySelector('.cl-remove');
-      if (e.target === removeBtn || removeBtn.contains(e.target)) {
-        e.preventDefault();
-        e.stopPropagation();
-        const idx = parseInt(el.dataset.idx);
-        removeCity(idx);
-        return;
-      }
+      if (e.target === removeBtn || removeBtn.contains(e.target)) return;
+      e.stopPropagation();
       const wasActive = el.classList.contains('show-remove');
       labels.forEach(other => {
         other.classList.remove('show-remove');
@@ -953,7 +957,7 @@ function attachHoverHandlers() {
         activeReverseLabel = el;
         el.classList.add('reverse-active');
         const input = el.querySelector('.cl-reverse-input');
-        if (input) setTimeout(() => input.focus(), 50);
+        if (input) setTimeout(() => input.focus(), 100);
       }
     });
     // Handle input for reverse conversion
