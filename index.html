@@ -165,6 +165,7 @@
     pointer-events: auto;
   }
   .city-label:hover .cl-remove { opacity: 1; }
+  .city-label.show-remove .cl-remove { opacity: 1; }
 
   /* ── Reverse lookup (hover-to-convert) ── */
   .cl-reverse-wrap {
@@ -809,10 +810,11 @@ window.addEventListener('mousemove', (e) => {
 });
 window.addEventListener('mouseup', () => dragging = false);
 
-// Touch support
+// Touch support (pan/zoom only — city adding is via search on mobile)
 let touchStart = null, touchDist = null;
 mapWrap.addEventListener('touchstart', (e) => {
-  e.preventDefault(); // prevent iOS Safari page gestures
+  if (e.target.closest('.control-panel') || e.target.closest('.home-picker')) return;
+  e.preventDefault();
   if (e.touches.length === 1) {
     touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, vx: vb.x, vy: vb.y };
   } else if (e.touches.length === 2) {
@@ -820,7 +822,8 @@ mapWrap.addEventListener('touchstart', (e) => {
   }
 }, { passive: false });
 mapWrap.addEventListener('touchmove', (e) => {
-  e.preventDefault(); // prevent iOS Safari page scroll/bounce
+  if (e.target.closest('.control-panel') || e.target.closest('.home-picker')) return;
+  e.preventDefault();
   if (e.touches.length === 1 && touchStart) {
     const ctm = svgEl.getScreenCTM();
     if (!ctm) return;
@@ -927,6 +930,19 @@ function attachHoverHandlers() {
       // Don't deactivate if focus is still inside (user is typing)
       if (el.contains(document.activeElement) && document.activeElement.classList.contains('cl-reverse-input')) return;
       deactivateReverse(el);
+    });
+    // Mobile: tap label to show remove button, tap remove to delete
+    el.addEventListener('touchend', (e) => {
+      const removeBtn = el.querySelector('.cl-remove');
+      if (e.target === removeBtn || removeBtn.contains(e.target)) {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = parseInt(el.dataset.idx);
+        removeCity(idx);
+        return;
+      }
+      labels.forEach(other => { if (other !== el) other.classList.remove('show-remove'); });
+      el.classList.toggle('show-remove');
     });
     // Handle input for reverse conversion
     const input = el.querySelector('.cl-reverse-input');
