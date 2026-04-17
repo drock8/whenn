@@ -4,7 +4,8 @@
 
 ### Fixed
 - **City deletion on mobile**: Tapping the remove (✕) button now correctly deletes the city instead of the button disappearing without effect
-- **Per-city "time there" input on mobile**: Fully separated touch and mouse event paths — on touch devices, `mouseenter`/`mouseleave` handlers are no longer attached, eliminating synthetic mouse event interference on iOS. Tap a city label to show both the delete button and reverse time input; tap elsewhere to dismiss
+- **Per-city "time there" input on mobile**: Fully separated touch and mouse event paths — on touch devices, `mouseenter`/`mouseleave` handlers are no longer attached, eliminating synthetic mouse event interference on iOS. Tap a city label to show the reverse time input; tap elsewhere to dismiss
+- **Mobile city label tap order**: First tap now shows the time input field instead of the delete icon — more intuitive since entering a future time is the primary action. Second tap (without entering a time) reveals the delete button
 - **Search input focus on iOS Safari**: The search field and other control panel inputs can now be focused and typed into on touch devices
 - **Bottom controls centering on mobile**: Fixed controls bar being slightly off-center to the left in the mobile column layout
 - **Plan Ahead panel width**: Helper text no longer expands the panel — now positioned absolutely below it to match the search field width
