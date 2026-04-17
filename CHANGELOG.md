@@ -4,7 +4,7 @@
 
 ### Fixed
 - **City deletion on mobile**: Tapping the remove (✕) button now correctly deletes the city instead of the button disappearing without effect
-- **Per-city "time there" input on mobile**: Tapping a city label activates the reverse time lookup input, matching the hover behavior on desktop. Fixed touch `preventDefault` blocking keyboard focus on the input field inside city labels
+- **Per-city "time there" input on mobile**: Tapping a city label now reliably shows both the reverse time input and delete button together. Tied visibility to the `show-remove` class (mobile-only) so it doesn't depend on the desktop hover-based `reverse-active` flow
 - **Search input focus on iOS Safari**: The search field and other control panel inputs can now be focused and typed into on touch devices
 - **Bottom controls centering on mobile**: Fixed controls bar being slightly off-center to the left in the mobile column layout
 
