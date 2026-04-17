@@ -814,7 +814,7 @@ window.addEventListener('mouseup', () => dragging = false);
 // Touch support (pan/zoom only — city adding is via search on mobile)
 let touchStart = null, touchDist = null;
 mapWrap.addEventListener('touchstart', (e) => {
-  if (e.target.closest('.control-panel') || e.target.closest('.home-picker')) return;
+  if (e.target.closest('.control-panel') || e.target.closest('.home-picker') || e.target.closest('.city-label')) return;
   e.preventDefault();
   if (e.touches.length === 1) {
     touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, vx: vb.x, vy: vb.y };
@@ -823,7 +823,7 @@ mapWrap.addEventListener('touchstart', (e) => {
   }
 }, { passive: false });
 mapWrap.addEventListener('touchmove', (e) => {
-  if (e.target.closest('.control-panel') || e.target.closest('.home-picker')) return;
+  if (e.target.closest('.control-panel') || e.target.closest('.home-picker') || e.target.closest('.city-label')) return;
   e.preventDefault();
   if (e.touches.length === 1 && touchStart) {
     const ctm = svgEl.getScreenCTM();
