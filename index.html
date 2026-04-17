@@ -73,7 +73,9 @@
     width: auto; cursor: pointer; color-scheme: dark;
   }
   .control-panel .label-text {
-    font-size: 0.72rem; color: #8b5cf6; font-weight: 700;
+    font-size: 0.72rem; font-weight: 700;
+    background: linear-gradient(135deg, #34d399, #8b5cf6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     white-space: nowrap; letter-spacing: 0.5px; text-transform: uppercase;
   }
   .btn-clear {
@@ -310,8 +312,8 @@
     pointer-events: none; text-align: center;
   }
   .title-overlay h1 {
-    font-size: 1.2rem; font-weight: 700; opacity: 0.6;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    font-size: 1.44rem; font-weight: 700; opacity: 0.6;
+    background: linear-gradient(135deg, #34d399, #8b5cf6);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
 
@@ -388,11 +390,11 @@
       <input type="text" id="citySearch" placeholder="Add a city..." autocomplete="off">
       <div class="search-results" id="searchResults"></div>
     </div>
-    <div class="control-panel" style="position:relative;">
+    <div class="control-panel" style="flex-wrap:wrap;justify-content:center;">
       <span class="label-text">Plan Ahead</span>
       <input type="text" id="futureTime" placeholder="e.g. 5pm" maxlength="7" style="width:72px;text-align:center;font-variant-numeric:tabular-nums;" title="Enter a time: 5pm, 10am, 17:00, 1430...">
       <button class="btn-clear" id="clearFuture" style="display:none;" onclick="clearFutureTime()">Clear</button>
-      <div style="position:absolute;bottom:-14px;left:0;right:0;text-align:center;font-size:9px;color:#64748b;white-space:nowrap;">See what time it'll be everywhere</div>
+      <div style="width:100%;text-align:center;font-size:9px;color:#64748b;white-space:nowrap;">See what time it'll be everywhere</div>
     </div>
     <div class="home-btn" id="homeBtn" onclick="toggleHomePicker()" title="Change your home location">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>

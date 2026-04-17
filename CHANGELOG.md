@@ -16,6 +16,9 @@
 - Helper text under "Plan Ahead": "See what time it'll be everywhere" to clarify the feature's purpose
 
 ### Changed
+- **App title**: 20% larger with a green-to-purple gradient
+- **"Plan Ahead" label**: Now uses the same green-to-purple gradient
+- **Plan Ahead helper text**: Moved inside the panel box instead of floating below it
 - Map taps on mobile no longer attempt to add cities — use the search field instead, since the screen is too small for accurate tap targeting
 - Touch panning and pinch-to-zoom continue to work as before
 
