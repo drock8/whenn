@@ -926,48 +926,49 @@ function rebuildLabels() {
 // ============ HOVER-TO-CONVERT (REVERSE LOOKUP) ============
 let activeReverseLabel = null;
 
+const isTouchDevice = 'ontouchstart' in window;
+
 function attachHoverHandlers() {
   const labels = labelsContainer.querySelectorAll('.city-label');
   labels.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      activeReverseLabel = el;
-      el.classList.add('reverse-active');
-      const input = el.querySelector('.cl-reverse-input');
-      if (input) setTimeout(() => input.focus(), 50);
-    });
-    el.addEventListener('mouseleave', (e) => {
-      if (el.contains(document.activeElement) && document.activeElement.classList.contains('cl-reverse-input')) return;
-      if (el.classList.contains('show-remove')) return;
-      deactivateReverse(el);
-    });
-    // Mobile: tap label to show remove button + reverse input
-    el.addEventListener('click', (e) => {
-      if (!('ontouchstart' in window)) return;
-      if (e.target.closest('.cl-reverse-input')) return;
-      const removeBtn = el.querySelector('.cl-remove');
-      if (e.target === removeBtn || removeBtn.contains(e.target)) return;
-      e.stopPropagation();
-      const wasActive = el.classList.contains('show-remove');
-      labels.forEach(other => {
-        other.classList.remove('show-remove');
-        deactivateReverse(other);
-      });
-      if (!wasActive) {
-        el.classList.add('show-remove');
+    if (!isTouchDevice) {
+      el.addEventListener('mouseenter', () => {
         activeReverseLabel = el;
         el.classList.add('reverse-active');
         const input = el.querySelector('.cl-reverse-input');
-        if (input) setTimeout(() => input.focus(), 100);
-      }
-    });
+        if (input) setTimeout(() => input.focus(), 50);
+      });
+      el.addEventListener('mouseleave', (e) => {
+        if (el.contains(document.activeElement) && document.activeElement.classList.contains('cl-reverse-input')) return;
+        deactivateReverse(el);
+      });
+    } else {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.cl-reverse-input')) return;
+        const removeBtn = el.querySelector('.cl-remove');
+        if (e.target === removeBtn || removeBtn.contains(e.target)) return;
+        e.stopPropagation();
+        const wasActive = el.classList.contains('show-remove');
+        labels.forEach(other => {
+          other.classList.remove('show-remove');
+          deactivateReverse(other);
+        });
+        if (!wasActive) {
+          el.classList.add('show-remove');
+          activeReverseLabel = el;
+          el.classList.add('reverse-active');
+          const input = el.querySelector('.cl-reverse-input');
+          if (input) setTimeout(() => input.focus(), 100);
+        }
+      });
+    }
     // Handle input for reverse conversion
     const input = el.querySelector('.cl-reverse-input');
     if (input) {
       input.addEventListener('input', () => onReverseInput(el));
       input.addEventListener('blur', () => {
-        // Small delay so mouseleave can fire first
         setTimeout(() => {
-          if (activeReverseLabel === el && !el.matches(':hover')) {
+          if (activeReverseLabel === el && !el.matches(':hover') && !el.classList.contains('show-remove')) {
             deactivateReverse(el);
           }
         }, 150);

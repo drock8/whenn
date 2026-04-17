@@ -4,7 +4,7 @@
 
 ### Fixed
 - **City deletion on mobile**: Tapping the remove (✕) button now correctly deletes the city instead of the button disappearing without effect
-- **Per-city "time there" input on mobile**: Switched from `touchend` to `click` event for city label tap handling — more reliable on iOS Safari/Chrome. Prevented synthetic `mouseleave` from immediately dismissing the input. Tapping elsewhere on the map now dismisses the open label
+- **Per-city "time there" input on mobile**: Fully separated touch and mouse event paths — on touch devices, `mouseenter`/`mouseleave` handlers are no longer attached, eliminating synthetic mouse event interference on iOS. Tap a city label to show both the delete button and reverse time input; tap elsewhere to dismiss
 - **Search input focus on iOS Safari**: The search field and other control panel inputs can now be focused and typed into on touch devices
 - **Bottom controls centering on mobile**: Fixed controls bar being slightly off-center to the left in the mobile column layout
 
