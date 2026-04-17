@@ -19,4 +19,4 @@
 - Touch panning and pinch-to-zoom continue to work as before
 
 ## [2026-04-16] — Initial Release
-- World Time Machine — interactive world map timezone viewer
+- Whenn — interactive world map timezone viewer
