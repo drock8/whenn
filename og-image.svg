@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#070b14"/>
+      <stop offset="40%" stop-color="#0f1729"/>
+      <stop offset="100%" stop-color="#1a0a2e"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="600" cy="315" r="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="300" cy="200" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow3" cx="900" cy="400" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="textglow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow3)"/>
+
+  <!-- Grid lines (subtle) -->
+  <g stroke="#1e3a5f" stroke-opacity="0.15" stroke-width="0.5">
+    <line x1="0" y1="157" x2="1200" y2="157"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="473" x2="1200" y2="473"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+  </g>
+
+  <!-- Timezone offset markers -->
+  <g font-family="'Segoe UI', system-ui, sans-serif" font-size="11" fill="#3b82f6" fill-opacity="0.25" text-anchor="middle">
+    <text x="150" y="590">UTC-8</text>
+    <text x="300" y="590">UTC-4</text>
+    <text x="450" y="590">UTC</text>
+    <text x="600" y="590">UTC+4</text>
+    <text x="750" y="590">UTC+8</text>
+    <text x="900" y="590">UTC+12</text>
+    <text x="1050" y="590">UTC+16</text>
+  </g>
+
+  <!-- Decorative date line -->
+  <line x1="450" y1="40" x2="450" y2="570" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.3"/>
+
+  <!-- City dots with glow -->
+  <g filter="url(#softglow)">
+    <!-- New York -->
+    <circle cx="340" cy="240" r="4" fill="#3b82f6" opacity="0.7"/>
+    <!-- London -->
+    <circle cx="470" cy="210" r="4" fill="#10b981" opacity="0.7"/>
+    <!-- Tokyo -->
+    <circle cx="920" cy="250" r="4" fill="#f59e0b" opacity="0.7"/>
+    <!-- Sydney -->
+    <circle cx="960" cy="400" r="4" fill="#ec4899" opacity="0.7"/>
+    <!-- Dubai -->
+    <circle cx="660" cy="280" r="4" fill="#8b5cf6" opacity="0.7"/>
+    <!-- LA -->
+    <circle cx="230" cy="260" r="4" fill="#06b6d4" opacity="0.7"/>
+  </g>
+
+  <!-- City labels (small) -->
+  <g font-family="'Segoe UI', system-ui, sans-serif" font-size="10" font-weight="600" fill-opacity="0.4">
+    <text x="340" y="228" fill="#3b82f6" text-anchor="middle">New York</text>
+    <text x="470" y="198" fill="#10b981" text-anchor="middle">London</text>
+    <text x="920" y="238" fill="#f59e0b" text-anchor="middle">Tokyo</text>
+    <text x="960" y="418" fill="#ec4899" text-anchor="middle">Sydney</text>
+    <text x="660" y="268" fill="#8b5cf6" text-anchor="middle">Dubai</text>
+    <text x="230" y="248" fill="#06b6d4" text-anchor="middle">Los Angeles</text>
+  </g>
+
+  <!-- Main text -->
+  <text x="600" y="320" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="64" font-weight="700" fill="#f1f5f9" filter="url(#textglow)">What time is it there?</text>
+
+  <!-- App name -->
+  <text x="600" y="380" text-anchor="middle" font-family="'Segoe UI', system-ui, sans-serif" font-size="22" font-weight="600" fill="#8b5cf6" letter-spacing="4" opacity="0.8">WORLD TIME MACHINE</text>
+
+  <!-- Subtle border -->
+  <rect x="0" y="0" width="1200" height="630" fill="none" stroke="#1e3a5f" stroke-opacity="0.3" stroke-width="1"/>
+</svg>

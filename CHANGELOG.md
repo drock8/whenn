@@ -11,6 +11,7 @@
 - **Date labels hidden behind controls on mobile**: Moved date indicator up on mobile so it sits above the controls stack
 
 ### Added
+- **Open Graph image and meta tags**: Link sharing now shows a striking preview with "What time is it there?" tagline, city dots, and dark background
 - Helper text under "Plan Ahead": "See what time it'll be everywhere" to clarify the feature's purpose
 
 ### Changed
