@@ -1,5 +1,26 @@
 # Changelog
 
+## [2026-05-15] — Grid View
+
+### Added
+- **Grid view**: New card-based layout showing all cities at a glance — 2 columns on mobile, 2 on desktop
+- **Home card**: Centered home timezone card at the top of the grid with large editable time
+- **Tap-to-edit time on any card**: Tap a city's time, type a new time, and every other card (and the map) updates instantly to show that moment in each timezone
+- **Two-way sync**: Time edits on the map update the grid and vice versa
+- **Day/night card backgrounds**: Cards use the same warm amber (day) and deep dark (night) shading as the map overlay — no emoji icons
+- **Date context on cards**: Shows date with "(tomorrow)" or "(yesterday)" only when a city is on a different day than the user
+- **Drag to reorder**: Hold and drag cards to rearrange; custom order persists across sessions
+- **Mobile tabs**: Map/Grid toggle at the bottom of the screen on mobile
+- **Desktop side-by-side**: Map (55%) and grid (45%) shown together on desktop
+
+### Changed
+- **Controls bar**: Now floats over both views (fixed position) so search, Plan Ahead, and home picker work regardless of active view
+- **Controls order**: Reordered to Search, Location, Plan Ahead — groups related controls together on mobile
+- **Plan Ahead syncs to grid**: Setting a future time updates both map labels and grid cards
+
+### Fixed
+- **Home city selection**: Selecting Shanghai (or other cities sharing an IANA timezone with another city) no longer defaults to the first match — city name is now stored separately in localStorage
+
 ## [2026-05-14] — Progressive Web App
 
 ### Added

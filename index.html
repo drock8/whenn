@@ -39,20 +39,7 @@
     position: relative;
   }
 
-  /* ── Floating controls ── */
-  .controls {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    gap: 10px;
-    align-items: stretch;
-    flex-wrap: nowrap;
-    justify-content: center;
-    max-width: 95vw;
-  }
+  /* ── Floating controls (positioned via .controls block below) ── */
   .control-panel {
     background: rgba(15, 22, 41, 0.92);
     backdrop-filter: blur(16px);
@@ -329,14 +316,217 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #1e2d4a; border-radius: 3px; }
 
-  @media (max-width: 640px) {
-    .controls { bottom: 8px; gap: 6px; flex-direction: column; align-items: center; left: 50%; transform: translateX(-50%); width: max-content; }
+  /* ── App Shell (desktop side-by-side) ── */
+  .app-shell {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; overflow: hidden;
+  }
+  .app-shell .map-wrap {
+    position: relative;
+    top: auto; left: auto; right: auto; bottom: auto;
+    flex: 1 1 55%;
+    min-width: 0;
+  }
+  .grid-panel {
+    flex: 0 0 45%;
+    max-width: 420px;
+    background: #0a0e17;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: none;
+    border-left: 1px solid rgba(30, 45, 74, 0.6);
+    padding: 16px 12px 120px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  @media (min-width: 768px) {
+    .grid-panel { display: block; }
+    .view-tabs { display: none !important; }
+  }
+  @media (max-width: 767px) {
+    .app-shell { flex-direction: column; }
+    .app-shell .map-wrap { flex: 1 1 100%; display: block; }
+    .grid-panel {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      flex: none; max-width: none; border-left: none;
+    }
+    body.view-grid .app-shell .map-wrap { display: none; }
+    body.view-grid .grid-panel { display: block; }
+    body.view-map .grid-panel { display: none; }
+    body.view-map .app-shell .map-wrap { display: block; }
+  }
+
+  /* ── View Tabs (mobile toggle) ── */
+  .view-tabs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 1100;
+    display: flex;
+    background: rgba(10, 14, 23, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(30, 45, 74, 0.6);
+    padding: 0 0 env(safe-area-inset-bottom, 0px) 0;
+  }
+  .view-tab {
+    flex: 1;
+    padding: 10px 0 8px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: color 0.15s;
+    background: none; border: none;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .view-tab.active {
+    color: #e2e8f0;
+    border-top: 2px solid #8b5cf6;
+  }
+  .view-tab svg { width: 18px; height: 18px; display: block; margin: 0 auto 3px; }
+
+  /* ── Grid Cards ── */
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .grid-card {
+    position: relative;
+    background: rgba(15, 22, 41, 0.92);
+    border: 1px solid rgba(30, 45, 74, 0.6);
+    border-radius: 12px;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
+    transition: transform 0.15s, box-shadow 0.15s;
+    overflow: hidden;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .grid-card .gc-city {
+    font-size: 0.82rem; font-weight: 700; color: #e2e8f0;
+    text-align: center; line-height: 1.2;
+  }
+  .grid-card .gc-country {
+    font-size: 0.65rem; color: #475569;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .grid-card .gc-time {
+    font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums;
+    color: #f1f5f9; cursor: pointer;
+    padding: 2px 6px; border-radius: 6px;
+    transition: background 0.12s; text-align: center;
+  }
+  .grid-card .gc-time:hover { background: rgba(139, 92, 246, 0.12); }
+  .grid-card .gc-time-input {
+    font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums;
+    width: 100px; text-align: center;
+    background: rgba(15, 22, 41, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    border-radius: 6px; color: #e2e8f0;
+    padding: 4px 6px; outline: none;
+  }
+  .grid-card .gc-time-input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+  }
+  .grid-card .gc-offset {
+    font-size: 0.7rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .grid-card.gc-day { background: rgba(255, 200, 80, 0.08); }
+  .grid-card.gc-night { background: rgba(0, 2, 15, 0.55); border-color: rgba(20, 30, 50, 0.6); }
+  .grid-card .gc-date { font-size: 0.65rem; color: #94a3b8; margin-top: 2px; }
+  .grid-card .gc-remove {
+    position: absolute; top: 4px; right: 4px;
+    background: rgba(239,68,68,0.15); border: none; color: #f87171;
+    width: 20px; height: 20px; border-radius: 50%;
+    font-size: 10px; line-height: 20px; text-align: center;
+    cursor: pointer; opacity: 0; transition: opacity 0.15s;
+  }
+  @media (hover: hover) { .grid-card:hover .gc-remove { opacity: 1; } }
+  .grid-card.show-remove .gc-remove { opacity: 1; }
+  .grid-card.dragging {
+    opacity: 0.9; transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    z-index: 100; position: fixed; pointer-events: none;
+  }
+  .grid-card.drop-placeholder {
+    opacity: 0.3;
+    border: 2px dashed rgba(139, 92, 246, 0.4);
+    background: transparent;
+  }
+
+  /* ── Grid Edit Banner ── */
+  .grid-edit-banner {
+    display: none;
+    align-items: center; justify-content: center;
+    gap: 8px; padding: 8px 14px; margin-bottom: 10px;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+    font-size: 0.78rem; color: #c4b5fd;
+  }
+  .grid-edit-banner.show { display: flex; }
+  .grid-edit-banner button {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #f87171; font-size: 0.72rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 6px; cursor: pointer;
+  }
+
+  /* ── Home Card ── */
+  .grid-home-card {
+    grid-column: 1 / -1;
+    background: rgba(15, 22, 41, 0.92);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    margin-bottom: 6px;
+  }
+  .grid-home-card .ghc-label {
+    font-size: 0.65rem; color: #34d399;
+    text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;
+  }
+  .grid-home-card .ghc-city { font-size: 0.9rem; font-weight: 700; color: #e2e8f0; }
+  .grid-home-card .ghc-time {
+    font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums;
+    color: #f1f5f9; text-align: center;
+  }
+  .grid-home-card .ghc-date { font-size: 0.7rem; color: #64748b; text-align: center; }
+
+  /* ── Controls (fixed, shared between views) ── */
+  .controls {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1050;
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    justify-content: center;
+    max-width: 95vw;
+  }
+  @media (max-width: 767px) {
+    .controls { bottom: 56px; gap: 6px; flex-wrap: wrap; justify-content: center; left: 50%; transform: translateX(-50%); width: max-content; max-width: 95vw; }
+    .controls .search-section, .controls .home-btn { flex: 0 0 auto; }
+    .controls .control-panel:last-child { flex: 0 0 100%; }
     .control-panel input { width: 140px; }
   }
 </style>
 </head>
 <body>
 
+<div class="app-shell" id="appShell">
 <!-- Map -->
 <div class="map-wrap" id="mapWrap">
   <svg id="mapSvg" viewBox="0 0 1000 500" preserveAspectRatio="none">
@@ -391,28 +581,51 @@
   <div class="date-label date-label-right" id="dateLabelRight"></div>
   <!-- Click hint tooltip -->
   <div class="map-click-hint" id="mapClickHint"></div>
-  <!-- Floating Controls (inside map, at bottom) -->
-  <div class="controls">
-    <div class="control-panel search-section">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-      <input type="text" id="citySearch" placeholder="Add a city..." autocomplete="off">
-      <div class="search-results" id="searchResults"></div>
-    </div>
-    <div class="control-panel" style="flex-wrap:wrap;justify-content:center;">
-      <span class="label-text">Plan Ahead</span>
-      <input type="text" id="futureTime" placeholder="e.g. 5pm" maxlength="7" style="width:72px;text-align:center;font-variant-numeric:tabular-nums;" title="Enter a time: 5pm, 10am, 17:00, 1430...">
-      <button class="btn-clear" id="clearFuture" style="display:none;" onclick="clearFutureTime()">Clear</button>
-      <div style="width:100%;text-align:center;font-size:9px;color:#64748b;white-space:nowrap;">See what time it'll be everywhere</div>
-    </div>
-    <div class="home-btn" id="homeBtn" onclick="toggleHomePicker()" title="Change your home location">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-      <span class="home-tz" id="homeTzLabel"></span>
-      <div class="home-picker" id="homePicker">
-        <input type="text" id="homeSearch" placeholder="Search city..." autocomplete="off" onclick="event.stopPropagation()">
-        <div class="home-picker-results" id="homeResults"></div>
-      </div>
+</div>
+
+<!-- Grid Panel -->
+<div class="grid-panel" id="gridPanel">
+  <div class="grid-edit-banner" id="gridEditBanner">
+    <span id="gridEditText"></span>
+    <button onclick="clearGridEdit()">Reset</button>
+  </div>
+  <div class="grid-cards" id="gridCards"></div>
+</div>
+</div><!-- end .app-shell -->
+
+<!-- Floating Controls (shared between views) -->
+<div class="controls">
+  <div class="control-panel search-section">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+    <input type="text" id="citySearch" placeholder="Add a city..." autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <div class="home-btn" id="homeBtn" onclick="toggleHomePicker()" title="Change your home location">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+    <span class="home-tz" id="homeTzLabel"></span>
+    <div class="home-picker" id="homePicker">
+      <input type="text" id="homeSearch" placeholder="Search city..." autocomplete="off" onclick="event.stopPropagation()">
+      <div class="home-picker-results" id="homeResults"></div>
     </div>
   </div>
+  <div class="control-panel" style="flex-wrap:wrap;justify-content:center;">
+    <span class="label-text">Plan Ahead</span>
+    <input type="text" id="futureTime" placeholder="e.g. 5pm" maxlength="7" style="width:72px;text-align:center;font-variant-numeric:tabular-nums;" title="Enter a time: 5pm, 10am, 17:00, 1430...">
+    <button class="btn-clear" id="clearFuture" style="display:none;" onclick="clearFutureTime()">Clear</button>
+    <div style="width:100%;text-align:center;font-size:9px;color:#64748b;white-space:nowrap;">See what time it'll be everywhere</div>
+  </div>
+</div>
+
+<!-- View Tabs (mobile) -->
+<div class="view-tabs" id="viewTabs">
+  <button class="view-tab active" data-view="map" onclick="switchView('map')">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
+    Map
+  </button>
+  <button class="view-tab" data-view="grid" onclick="switchView('grid')">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z"/></svg>
+    Grid
+  </button>
 </div>
 
 <div class="title-overlay"><h1>Whenn</h1></div>
@@ -743,6 +956,10 @@ let futureMode = false;
 let futureUTCMoment = null;
 let localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const browserTZ = localTZ; // remember the real one
+let viewMode = 'map';
+let gridEditUTCMoment = null;
+let gridEditSourceTZ = null;
+let cityOrder = null;
 
 // ============ MAP PROJECTION & INTERACTION ============
 const svgEl = document.getElementById('mapSvg');
@@ -941,6 +1158,7 @@ function rebuildLabels() {
   }).join('');
   positionLabels();
   attachHoverHandlers();
+  rebuildGrid();
 }
 
 // ============ HOVER-TO-CONVERT (REVERSE LOOKUP) ============
@@ -1027,6 +1245,7 @@ function deactivateReverse(el) {
   if (input) input.value = '';
   if (result) result.textContent = '';
   if (activeReverseLabel === el) activeReverseLabel = null;
+  if (gridEditUTCMoment) clearGridEdit();
 }
 
 function onReverseInput(el) {
@@ -1055,6 +1274,10 @@ function onReverseInput(el) {
   // Now 'guess' is the UTC moment. Format in local TZ.
   const localTime = formatTime(localTZ, guess);
   result.textContent = 'Your time: ' + localTime;
+  // Sync to grid view
+  gridEditUTCMoment = guess;
+  gridEditSourceTZ = remoteTZ;
+  rebuildGrid();
 }
 
 // ============ CLICK ON MAP TO ADD NEAREST CITY ============
@@ -1148,11 +1371,20 @@ function positionLabels() {
 }
 
 function tickLabels() {
+  const useDate = gridEditUTCMoment || (futureMode ? futureUTCMoment : null) || undefined;
   const labels = labelsContainer.querySelectorAll('.cl-time');
   labels.forEach(el => {
     const tz = el.dataset.tz;
-    if (tz) el.textContent = formatTime(tz);
+    if (tz) el.textContent = formatTime(tz, useDate);
   });
+  if (!gridEditUTCMoment) {
+    document.querySelectorAll('.gc-time').forEach(el => {
+      const tz = el.dataset.tz;
+      if (tz) el.textContent = formatTime(tz, useDate);
+    });
+    const homeTime = document.querySelector('.ghc-time');
+    if (homeTime && homeTime.dataset.tz) homeTime.textContent = formatTime(homeTime.dataset.tz, useDate);
+  }
 }
 
 // ============ SOLAR TERMINATOR (DAY/NIGHT OVERLAY) ============
@@ -1432,11 +1664,16 @@ document.addEventListener('click', e => {
 function addCity(city) {
   if (selectedCities.find(c => c.name===city.name && c.country===city.country)) return;
   selectedCities.push(city);
+  if (cityOrder) cityOrder.push(selectedCities.length - 1);
   saveState();
   rebuildLabels();
 }
 function removeCity(index) {
   selectedCities.splice(index, 1);
+  if (cityOrder) {
+    cityOrder = cityOrder.filter(i => i !== index).map(i => i > index ? i - 1 : i);
+    if (cityOrder.length !== selectedCities.length) cityOrder = null;
+  }
   saveState();
   rebuildLabels();
 }
@@ -1529,7 +1766,9 @@ const homePicker = document.getElementById('homePicker');
 const homeSearch = document.getElementById('homeSearch');
 const homeResults = document.getElementById('homeResults');
 
+let homeCityName = null;
 function getHomeCityName() {
+  if (homeCityName) return homeCityName;
   const city = CITIES.find(c => c.tz === localTZ);
   return city ? city.name : localTZ.split('/').pop().replace(/_/g, ' ');
 }
@@ -1563,7 +1802,8 @@ function renderHomeResults(q) {
       const city = CITIES.find(c => c.name===item.dataset.name && c.country===item.dataset.country);
       if (city) {
         localTZ = city.tz;
-        try { localStorage.setItem('wtm_home', localTZ); } catch(e){}
+        homeCityName = city.name;
+        try { localStorage.setItem('wtm_home', localTZ); localStorage.setItem('wtm_home_city', city.name); } catch(e){}
         updateHomeTzLabel();
         rebuildLabels();
         updateDateLine();
@@ -1583,6 +1823,10 @@ document.addEventListener('click', e => {
 // ============ PERSISTENCE ============
 function saveState() {
   try { localStorage.setItem('wtm3', JSON.stringify(selectedCities.map(c=>({n:c.name,c:c.country})))); } catch(e){}
+  try {
+    if (cityOrder) localStorage.setItem('wtm3_order', JSON.stringify(cityOrder));
+    else localStorage.removeItem('wtm3_order');
+  } catch(e){}
 }
 function loadState() {
   try {
@@ -1591,20 +1835,324 @@ function loadState() {
       if (city && !selectedCities.find(c=>c.name===city.name)) selectedCities.push(city);
     });
   } catch(e){}
-  // Load saved home timezone
+  try {
+    const savedOrder = JSON.parse(localStorage.getItem('wtm3_order') || 'null');
+    if (Array.isArray(savedOrder)) cityOrder = savedOrder;
+  } catch(e){}
   try {
     const savedHome = localStorage.getItem('wtm_home');
     if (savedHome) localTZ = savedHome;
+    const savedHomeName = localStorage.getItem('wtm_home_city');
+    if (savedHomeName) homeCityName = savedHomeName;
   } catch(e){}
+}
+
+// ============ GRID VIEW ============
+const gridCardsContainer = document.getElementById('gridCards');
+const gridEditBanner = document.getElementById('gridEditBanner');
+const gridEditText = document.getElementById('gridEditText');
+
+function switchView(mode) {
+  viewMode = mode;
+  document.body.classList.toggle('view-map', mode === 'map');
+  document.body.classList.toggle('view-grid', mode === 'grid');
+  document.querySelectorAll('.view-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.view === mode);
+  });
+  if (mode === 'grid') rebuildGrid();
+  if (mode === 'map') updateViewBox();
+}
+
+function getGridOrder() {
+  if (cityOrder && cityOrder.length === selectedCities.length) return cityOrder;
+  const indices = selectedCities.map((_, i) => i);
+  indices.sort((a, b) => {
+    const offA = getOffsetDiff('UTC', selectedCities[a].tz);
+    const offB = getOffsetDiff('UTC', selectedCities[b].tz);
+    return offA - offB;
+  });
+  return indices;
+}
+
+function isDaytime(tz) {
+  const now = gridEditUTCMoment || (futureMode ? futureUTCMoment : null) || new Date();
+  const h = parseInt(now.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', hour12: false }));
+  return h >= 6 && h < 18;
+}
+
+function getCardDateLabel(tz) {
+  var now = gridEditUTCMoment || (futureMode ? futureUTCMoment : null) || new Date();
+  var localDate = now.toLocaleDateString('en-US', { timeZone: localTZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+  var cityDate = now.toLocaleDateString('en-US', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
+  if (localDate === cityDate) return '';
+  var ld = new Date(localDate), cd = new Date(cityDate);
+  var dayDiff = Math.round((cd - ld) / (1000 * 60 * 60 * 24));
+  var label = now.toLocaleDateString('en-US', { timeZone: tz, weekday: 'short', month: 'short', day: 'numeric' });
+  if (dayDiff === 1) return label + ' (tomorrow)';
+  if (dayDiff === -1) return label + ' (yesterday)';
+  return label;
+}
+
+function buildGridCardHTML(city, index, displayTime) {
+  const color = PIN_COLORS[index % PIN_COLORS.length];
+  const diff = getOffsetDiff(localTZ, city.tz);
+  let offText, offClass;
+  if (diff > 0) { offText = '+' + diff + 'h'; offClass = 'off-plus'; }
+  else if (diff < 0) { offText = diff + 'h'; offClass = 'off-minus'; }
+  else { offText = '±0'; offClass = 'off-zero'; }
+  const time = displayTime || formatTime(city.tz);
+  const dayNightClass = isDaytime(city.tz) ? 'gc-day' : 'gc-night';
+  const dateLabel = getCardDateLabel(city.tz);
+  return '<div class="grid-card ' + dayNightClass + '" data-grid-idx="' + index + '">' +
+    '<div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:' + color + ';border-radius:12px 0 0 12px;"></div>' +
+    '<button class="gc-remove" onclick="event.stopPropagation();removeCity(' + index + ');">✕</button>' +
+    '<div class="gc-city">' + city.name + '</div>' +
+    '<div class="gc-country">' + city.country + '</div>' +
+    '<div class="gc-time" data-tz="' + city.tz + '" data-idx="' + index + '" onclick="startGridEdit(this)">' + time + '</div>' +
+    '<span class="gc-offset ' + offClass + '">' + offText + '</span>' +
+    (dateLabel ? '<div class="gc-date">' + dateLabel + '</div>' : '') +
+    '</div>';
+}
+
+function buildHomeCardHTML() {
+  const homeName = getHomeCityName();
+  const now = gridEditUTCMoment || (futureMode ? futureUTCMoment : null) || new Date();
+  const time = formatTime(localTZ, gridEditUTCMoment || (futureMode ? futureUTCMoment : null) || undefined);
+  const dateStr = new Date(now).toLocaleDateString('en-US', {
+    timeZone: localTZ, weekday: 'short', month: 'short', day: 'numeric'
+  });
+  return '<div class="grid-home-card">' +
+    '<div class="ghc-label">Home</div>' +
+    '<div class="ghc-city">' + homeName + '</div>' +
+    '<div class="ghc-time" data-tz="' + localTZ + '" onclick="startHomeEdit(this)" style="cursor:pointer;padding:2px 8px;border-radius:6px;transition:background 0.12s;">' + time + '</div>' +
+    '<div class="ghc-date">' + dateStr + '</div>' +
+    '</div>';
+}
+
+function rebuildGrid() {
+  if (!gridCardsContainer) return;
+  const order = getGridOrder();
+  const useUTC = gridEditUTCMoment || (futureMode ? futureUTCMoment : null);
+  let html = buildHomeCardHTML();
+  order.forEach(function(idx) {
+    const city = selectedCities[idx];
+    if (!city) return;
+    const time = useUTC ? formatTime(city.tz, useUTC) : formatTime(city.tz);
+    html += buildGridCardHTML(city, idx, time);
+  });
+  gridCardsContainer.innerHTML = html;
+  gridEditBanner.classList.toggle('show', !!gridEditUTCMoment);
+  if (gridEditUTCMoment && gridEditSourceTZ) {
+    const srcCity = selectedCities.find(function(c) { return c.tz === gridEditSourceTZ; });
+    const srcName = srcCity ? srcCity.name : gridEditSourceTZ.split('/').pop().replace(/_/g, ' ');
+    gridEditText.textContent = 'Showing times for ' + formatTime(gridEditSourceTZ, gridEditUTCMoment) + ' in ' + srcName;
+  }
+  attachGridDragHandlers();
+}
+
+// ============ GRID TIME EDITING ============
+function startGridEdit(el) {
+  const tz = el.dataset.tz;
+  const idx = el.dataset.idx;
+  const currentTime = el.textContent.trim();
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'gc-time-input';
+  input.value = currentTime;
+  input.maxLength = 7;
+  input.dataset.tz = tz;
+  input.dataset.idx = idx;
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+  input.addEventListener('input', function() { onGridTimeInput(input); });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') input.blur();
+    else if (e.key === 'Escape') clearGridEdit();
+  });
+  input.addEventListener('blur', function() {
+    if (!gridEditUTCMoment) rebuildGrid();
+  });
+}
+
+function startHomeEdit(el) {
+  var tz = el.dataset.tz;
+  var currentTime = el.textContent.trim();
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'gc-time-input';
+  input.value = currentTime;
+  input.maxLength = 7;
+  input.dataset.tz = tz;
+  input.style.fontSize = '1.4rem';
+  input.style.width = '120px';
+  input.style.textAlign = 'right';
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+  input.addEventListener('input', function() { onGridTimeInput(input); });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') input.blur();
+    else if (e.key === 'Escape') clearGridEdit();
+  });
+  input.addEventListener('blur', function() {
+    if (!gridEditUTCMoment) rebuildGrid();
+  });
+}
+
+function onGridTimeInput(input) {
+  const t = parseTimeFlexible(input.value);
+  if (!t) return;
+  const remoteTZ = input.dataset.tz;
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0') + 'T' +
+    String(t.h).padStart(2,'0') + ':' + String(t.min).padStart(2,'0') + ':00';
+  let guess = new Date(dateStr);
+  const target = new Date(dateStr);
+  for (let i = 0; i < 4; i++) {
+    const g = new Date(guess.toLocaleString('en-US', { timeZone: remoteTZ }));
+    guess = new Date(guess.getTime() + (target - g));
+  }
+  gridEditUTCMoment = guess;
+  gridEditSourceTZ = remoteTZ;
+  document.querySelectorAll('.gc-time').forEach(function(cell) {
+    cell.textContent = formatTime(cell.dataset.tz, gridEditUTCMoment);
+  });
+  const homeTime = document.querySelector('.ghc-time');
+  if (homeTime) homeTime.textContent = formatTime(localTZ, gridEditUTCMoment);
+  // Update map labels too
+  labelsContainer.querySelectorAll('.cl-time').forEach(function(el) {
+    if (el.dataset.tz) el.textContent = formatTime(el.dataset.tz, gridEditUTCMoment);
+  });
+  gridEditBanner.classList.add('show');
+  const srcCity = selectedCities.find(function(c) { return c.tz === remoteTZ; });
+  const srcName = srcCity ? srcCity.name : remoteTZ.split('/').pop().replace(/_/g, ' ');
+  gridEditText.textContent = 'Showing times for ' + input.value + ' in ' + srcName;
+}
+
+function clearGridEdit() {
+  gridEditUTCMoment = null;
+  gridEditSourceTZ = null;
+  rebuildGrid();
+  // Reset map labels to live time
+  labelsContainer.querySelectorAll('.cl-time').forEach(function(el) {
+    if (el.dataset.tz) el.textContent = formatTime(el.dataset.tz);
+  });
+}
+
+// ============ GRID DRAG TO REORDER ============
+let dragState = null;
+
+function attachGridDragHandlers() {
+  gridCardsContainer.querySelectorAll('.grid-card').forEach(function(card) {
+    card.addEventListener('pointerdown', onGridPointerDown);
+  });
+}
+
+function onGridPointerDown(e) {
+  if (e.target.closest('.gc-remove') || e.target.closest('.gc-time-input') || e.target.closest('.gc-time')) return;
+  const card = e.currentTarget;
+  const idx = parseInt(card.dataset.gridIdx);
+  if (isNaN(idx)) return;
+  const rect = card.getBoundingClientRect();
+  dragState = {
+    idx: idx,
+    startX: e.clientX,
+    startY: e.clientY,
+    el: card,
+    rect: rect,
+    activated: false,
+    timer: setTimeout(function() { activateDrag(); }, 200)
+  };
+  card.setPointerCapture(e.pointerId);
+  card.addEventListener('pointermove', onGridPointerMove);
+  card.addEventListener('pointerup', onGridPointerUp);
+  card.addEventListener('pointercancel', onGridPointerUp);
+}
+
+function activateDrag() {
+  if (!dragState) return;
+  dragState.activated = true;
+  if (navigator.vibrate) navigator.vibrate(30);
+  const card = dragState.el;
+  const rect = dragState.rect;
+  const ghost = card.cloneNode(true);
+  ghost.classList.add('dragging');
+  ghost.style.width = rect.width + 'px';
+  ghost.style.height = rect.height + 'px';
+  ghost.style.left = rect.left + 'px';
+  ghost.style.top = rect.top + 'px';
+  document.body.appendChild(ghost);
+  dragState.ghost = ghost;
+  card.classList.add('drop-placeholder');
+  card.style.height = rect.height + 'px';
+}
+
+function onGridPointerMove(e) {
+  if (!dragState) return;
+  if (!dragState.activated) {
+    if (Math.hypot(e.clientX - dragState.startX, e.clientY - dragState.startY) > 8) {
+      clearTimeout(dragState.timer);
+      activateDrag();
+    }
+    return;
+  }
+  if (dragState.ghost) {
+    dragState.ghost.style.left = (dragState.rect.left + e.clientX - dragState.startX) + 'px';
+    dragState.ghost.style.top = (dragState.rect.top + e.clientY - dragState.startY) + 'px';
+  }
+  var cards = gridCardsContainer.querySelectorAll('.grid-card:not(.dragging)');
+  for (var i = 0; i < cards.length; i++) {
+    var target = cards[i];
+    if (target === dragState.el) continue;
+    var tRect = target.getBoundingClientRect();
+    var midY = tRect.top + tRect.height / 2;
+    if (e.clientY < midY && e.clientY > tRect.top) {
+      gridCardsContainer.insertBefore(dragState.el, target);
+      break;
+    }
+    if (e.clientY > midY && e.clientY < tRect.bottom) {
+      var next = target.nextElementSibling;
+      var homeCard = gridCardsContainer.querySelector('.grid-home-card');
+      if (next && next !== homeCard) {
+        gridCardsContainer.insertBefore(dragState.el, next);
+      } else if (homeCard) {
+        gridCardsContainer.insertBefore(dragState.el, homeCard);
+      }
+      break;
+    }
+  }
+}
+
+function onGridPointerUp(e) {
+  if (!dragState) return;
+  clearTimeout(dragState.timer);
+  var card = dragState.el;
+  card.removeEventListener('pointermove', onGridPointerMove);
+  card.removeEventListener('pointerup', onGridPointerUp);
+  card.removeEventListener('pointercancel', onGridPointerUp);
+  if (dragState.activated) {
+    if (dragState.ghost) dragState.ghost.remove();
+    card.classList.remove('drop-placeholder');
+    card.style.height = '';
+    var newOrder = [];
+    gridCardsContainer.querySelectorAll('.grid-card').forEach(function(el) {
+      var n = parseInt(el.dataset.gridIdx);
+      if (!isNaN(n)) newOrder.push(n);
+    });
+    if (newOrder.length === selectedCities.length) {
+      cityOrder = newOrder;
+      saveState();
+    }
+  }
+  dragState = null;
 }
 
 // ============ INIT ============
 function init() {
-  // Force pixel dimensions as fallback for iOS WebView where CSS vh/dvh may fail
-  const vh = window.innerHeight || document.documentElement.clientHeight || 500;
-  const vw = window.innerWidth || document.documentElement.clientWidth || 375;
-  mapWrap.style.width = vw + 'px';
-  mapWrap.style.height = vh + 'px';
+  document.body.classList.add('view-map');
 
   loadState();
   updateHomeTzLabel();
@@ -1618,19 +2166,15 @@ function init() {
       }
     });
   }
-  vb.w = getDefaultW(); // fill vertically on load
+  vb.w = getDefaultW();
   updateViewBox();
   rebuildLabels();
   updateDateLine();
   updateDayNight();
   setInterval(tickLabels, 1000);
   setInterval(updateDateLine, 30000);
-  setInterval(updateDayNight, 60000); // update every minute
+  setInterval(updateDayNight, 60000);
   window.addEventListener('resize', () => {
-    const vh = window.innerHeight || document.documentElement.clientHeight || 500;
-    const vw = window.innerWidth || document.documentElement.clientWidth || 375;
-    mapWrap.style.width = vw + 'px';
-    mapWrap.style.height = vh + 'px';
     updateViewBox();
   });
 }

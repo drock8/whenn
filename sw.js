@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whenn-v1';
+const CACHE_NAME = 'whenn-v2';
 const ASSETS = [
   '/',
   '/index.html',
