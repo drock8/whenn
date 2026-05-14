@@ -19,6 +19,7 @@
 - **Plan Ahead syncs to grid**: Setting a future time updates both map labels and grid cards
 
 ### Fixed
+- **Ghost card on drag reorder**: Dragging a card in grid view could leave a "ghost" clone permanently stuck on screen (visible in both grid and map views). Root cause: if the DOM was rebuilt during a drag, pointer event listeners were destroyed and the cloned element was never cleaned up. Now `rebuildGrid` cancels any active drag first, and a `lostpointercapture` fallback ensures cleanup even if pointer capture is released unexpectedly
 - **Home city selection**: Selecting Shanghai (or other cities sharing an IANA timezone with another city) no longer defaults to the first match — city name is now stored separately in localStorage
 
 ## [2026-05-14] — Progressive Web App

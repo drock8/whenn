@@ -1929,8 +1929,24 @@ function buildHomeCardHTML() {
     '</div>';
 }
 
+function cancelDragIfActive() {
+  if (!dragState) return;
+  clearTimeout(dragState.timer);
+  if (dragState.ghost) dragState.ghost.remove();
+  if (dragState.el) {
+    dragState.el.classList.remove('drop-placeholder');
+    dragState.el.style.height = '';
+    dragState.el.removeEventListener('pointermove', onGridPointerMove);
+    dragState.el.removeEventListener('pointerup', onGridPointerUp);
+    dragState.el.removeEventListener('pointercancel', onGridPointerUp);
+    dragState.el.removeEventListener('lostpointercapture', onGridPointerUp);
+  }
+  dragState = null;
+}
+
 function rebuildGrid() {
   if (!gridCardsContainer) return;
+  cancelDragIfActive();
   const order = getGridOrder();
   const useUTC = gridEditUTCMoment || (futureMode ? futureUTCMoment : null);
   let html = buildHomeCardHTML();
@@ -2067,9 +2083,11 @@ function onGridPointerDown(e) {
     timer: setTimeout(function() { activateDrag(); }, 200)
   };
   card.setPointerCapture(e.pointerId);
+  dragState.pointerId = e.pointerId;
   card.addEventListener('pointermove', onGridPointerMove);
   card.addEventListener('pointerup', onGridPointerUp);
   card.addEventListener('pointercancel', onGridPointerUp);
+  card.addEventListener('lostpointercapture', onGridPointerUp);
 }
 
 function activateDrag() {
@@ -2130,11 +2148,15 @@ function onGridPointerUp(e) {
   if (!dragState) return;
   clearTimeout(dragState.timer);
   var card = dragState.el;
+  var wasActivated = dragState.activated;
+  var ghost = dragState.ghost;
   card.removeEventListener('pointermove', onGridPointerMove);
   card.removeEventListener('pointerup', onGridPointerUp);
   card.removeEventListener('pointercancel', onGridPointerUp);
-  if (dragState.activated) {
-    if (dragState.ghost) dragState.ghost.remove();
+  card.removeEventListener('lostpointercapture', onGridPointerUp);
+  dragState = null;
+  if (wasActivated) {
+    if (ghost) ghost.remove();
     card.classList.remove('drop-placeholder');
     card.style.height = '';
     var newOrder = [];
@@ -2147,7 +2169,6 @@ function onGridPointerUp(e) {
       saveState();
     }
   }
-  dragState = null;
 }
 
 // ============ INIT ============
