@@ -452,6 +452,17 @@
   }
   @media (hover: hover) { .grid-card:hover .gc-remove { opacity: 1; } }
   .grid-card.show-remove .gc-remove { opacity: 1; }
+  .grid-card .gc-drag-handle {
+    display: none;
+    position: absolute; top: 0; left: 0; bottom: 0; width: 28px;
+    align-items: center; justify-content: center;
+    color: #64748b; cursor: grab; font-size: 14px;
+    touch-action: none;
+  }
+  .grid-card .gc-drag-handle:active { cursor: grabbing; }
+  body.reorder-mode .grid-card .gc-drag-handle { display: flex; }
+  body.reorder-mode .grid-card { padding-left: 28px; }
+  body.reorder-mode .grid-card .gc-time { pointer-events: none; }
   .grid-card.dragging {
     opacity: 0.9; transform: scale(1.05);
     box-shadow: 0 12px 40px rgba(0,0,0,0.6);
@@ -461,6 +472,18 @@
     opacity: 0.3;
     border: 2px dashed rgba(139, 92, 246, 0.4);
     background: transparent;
+  }
+  .grid-reorder-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: rgba(30, 45, 74, 0.8); border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #94a3b8; font-size: 0.7rem; padding: 4px 10px;
+    border-radius: 6px; cursor: pointer; z-index: 5;
+    transition: background 0.15s, color 0.15s;
+  }
+  .grid-reorder-btn:hover { background: rgba(139, 92, 246, 0.2); color: #e2e8f0; }
+  body.reorder-mode .grid-reorder-btn {
+    background: rgba(139, 92, 246, 0.3); color: #e2e8f0;
+    border-color: rgba(139, 92, 246, 0.6);
   }
 
   /* ── Grid Edit Banner ── */
@@ -584,7 +607,8 @@
 </div>
 
 <!-- Grid Panel -->
-<div class="grid-panel" id="gridPanel">
+<div class="grid-panel" id="gridPanel" style="position:relative;">
+  <button class="grid-reorder-btn" id="reorderBtn" onclick="toggleReorderMode()">Reorder</button>
   <div class="grid-edit-banner" id="gridEditBanner">
     <span id="gridEditText"></span>
     <button onclick="clearGridEdit()">Reset</button>
@@ -1859,6 +1883,11 @@ function switchView(mode) {
   document.querySelectorAll('.view-tab').forEach(tab => {
     tab.classList.toggle('active', tab.dataset.view === mode);
   });
+  if (reorderMode) {
+    reorderMode = false;
+    document.body.classList.remove('reorder-mode');
+    document.getElementById('reorderBtn').textContent = 'Reorder';
+  }
   if (mode === 'grid') rebuildGrid();
   if (mode === 'map') updateViewBox();
 }
@@ -1904,6 +1933,7 @@ function buildGridCardHTML(city, index, displayTime) {
   const dayNightClass = isDaytime(city.tz) ? 'gc-day' : 'gc-night';
   const dateLabel = getCardDateLabel(city.tz);
   return '<div class="grid-card ' + dayNightClass + '" data-grid-idx="' + index + '">' +
+    '<div class="gc-drag-handle">⠿</div>' +
     '<div style="position:absolute;top:0;left:0;bottom:0;width:3px;background:' + color + ';border-radius:12px 0 0 12px;"></div>' +
     '<button class="gc-remove" onclick="event.stopPropagation();removeCity(' + index + ');">✕</button>' +
     '<div class="gc-city">' + city.name + '</div>' +
@@ -1936,10 +1966,11 @@ function cancelDragIfActive() {
   if (dragState.el) {
     dragState.el.classList.remove('drop-placeholder');
     dragState.el.style.height = '';
-    dragState.el.removeEventListener('pointermove', onGridPointerMove);
-    dragState.el.removeEventListener('pointerup', onGridPointerUp);
-    dragState.el.removeEventListener('pointercancel', onGridPointerUp);
-    dragState.el.removeEventListener('lostpointercapture', onGridPointerUp);
+  }
+  if (dragState.handle) {
+    dragState.handle.removeEventListener('pointermove', onGridPointerMove);
+    dragState.handle.removeEventListener('pointerup', onGridPointerUp);
+    dragState.handle.removeEventListener('pointercancel', onGridPointerUp);
   }
   dragState = null;
 }
@@ -2060,18 +2091,27 @@ function clearGridEdit() {
 
 // ============ GRID DRAG TO REORDER ============
 let dragState = null;
+let reorderMode = false;
+
+function toggleReorderMode() {
+  reorderMode = !reorderMode;
+  document.body.classList.toggle('reorder-mode', reorderMode);
+  document.getElementById('reorderBtn').textContent = reorderMode ? 'Done' : 'Reorder';
+}
 
 function attachGridDragHandlers() {
-  gridCardsContainer.querySelectorAll('.grid-card').forEach(function(card) {
-    card.addEventListener('pointerdown', onGridPointerDown);
+  gridCardsContainer.querySelectorAll('.gc-drag-handle').forEach(function(handle) {
+    handle.addEventListener('pointerdown', onGridPointerDown);
   });
 }
 
 function onGridPointerDown(e) {
-  if (e.target.closest('.gc-remove') || e.target.closest('.gc-time-input') || e.target.closest('.gc-time')) return;
-  const card = e.currentTarget;
+  if (!reorderMode) return;
+  const card = e.target.closest('.grid-card');
+  if (!card) return;
   const idx = parseInt(card.dataset.gridIdx);
   if (isNaN(idx)) return;
+  e.preventDefault();
   const rect = card.getBoundingClientRect();
   dragState = {
     idx: idx,
@@ -2080,14 +2120,14 @@ function onGridPointerDown(e) {
     el: card,
     rect: rect,
     activated: false,
-    timer: setTimeout(function() { activateDrag(); }, 200)
+    pointerId: e.pointerId,
+    handle: e.currentTarget,
+    timer: setTimeout(function() { activateDrag(); }, 150)
   };
-  card.setPointerCapture(e.pointerId);
-  dragState.pointerId = e.pointerId;
-  card.addEventListener('pointermove', onGridPointerMove);
-  card.addEventListener('pointerup', onGridPointerUp);
-  card.addEventListener('pointercancel', onGridPointerUp);
-  card.addEventListener('lostpointercapture', onGridPointerUp);
+  e.currentTarget.setPointerCapture(e.pointerId);
+  e.currentTarget.addEventListener('pointermove', onGridPointerMove);
+  e.currentTarget.addEventListener('pointerup', onGridPointerUp);
+  e.currentTarget.addEventListener('pointercancel', onGridPointerUp);
 }
 
 function activateDrag() {
@@ -2117,6 +2157,7 @@ function onGridPointerMove(e) {
     }
     return;
   }
+  e.preventDefault();
   if (dragState.ghost) {
     dragState.ghost.style.left = (dragState.rect.left + e.clientX - dragState.startX) + 'px';
     dragState.ghost.style.top = (dragState.rect.top + e.clientY - dragState.startY) + 'px';
@@ -2148,12 +2189,14 @@ function onGridPointerUp(e) {
   if (!dragState) return;
   clearTimeout(dragState.timer);
   var card = dragState.el;
+  var handle = dragState.handle;
   var wasActivated = dragState.activated;
   var ghost = dragState.ghost;
-  card.removeEventListener('pointermove', onGridPointerMove);
-  card.removeEventListener('pointerup', onGridPointerUp);
-  card.removeEventListener('pointercancel', onGridPointerUp);
-  card.removeEventListener('lostpointercapture', onGridPointerUp);
+  if (handle) {
+    handle.removeEventListener('pointermove', onGridPointerMove);
+    handle.removeEventListener('pointerup', onGridPointerUp);
+    handle.removeEventListener('pointercancel', onGridPointerUp);
+  }
   dragState = null;
   if (wasActivated) {
     if (ghost) ghost.remove();

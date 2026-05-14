@@ -9,7 +9,7 @@
 - **Two-way sync**: Time edits on the map update the grid and vice versa
 - **Day/night card backgrounds**: Cards use the same warm amber (day) and deep dark (night) shading as the map overlay — no emoji icons
 - **Date context on cards**: Shows date with "(tomorrow)" or "(yesterday)" only when a city is on a different day than the user
-- **Drag to reorder**: Hold and drag cards to rearrange; custom order persists across sessions
+- **Drag to reorder**: Tap "Reorder" to enter reorder mode — cards show drag handles that work reliably on both touch and desktop. Custom order persists across sessions
 - **Mobile tabs**: Map/Grid toggle at the bottom of the screen on mobile
 - **Desktop side-by-side**: Map (55%) and grid (45%) shown together on desktop
 
