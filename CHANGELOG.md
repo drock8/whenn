@@ -1,5 +1,15 @@
 # Changelog
 
+## [2026-05-14] — Progressive Web App
+
+### Added
+- **PWA support**: Whenn is now installable on iOS, Android, and desktop via "Add to Home Screen"
+- **Offline support**: Service worker caches all assets for offline use
+- **App manifest**: Standalone display mode, themed status bar, proper app naming
+- **App icons**: Gradient "W" icon in SVG, PNG (192px, 512px), and Android maskable formats
+- **Favicon**: SVG favicon with PNG fallback
+- **iOS standalone mode**: `apple-mobile-web-app-capable` with `black-translucent` status bar
+
 ## [2026-04-16] — Mobile UX Improvements
 
 ### Fixed

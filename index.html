@@ -14,6 +14,14 @@
 <meta name="twitter:description" content="What time is it there? See the world's clocks at a glance.">
 <meta name="twitter:image" content="https://whenn.vercel.app/og-image.png">
 <meta property="og:url" content="https://whenn.vercel.app">
+<meta name="theme-color" content="#0a0e17">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Whenn">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html {
@@ -1627,6 +1635,10 @@ function init() {
   });
 }
 try { init(); } catch(e) { document.body.innerHTML = '<pre style="color:red;padding:20px">' + e.message + '\n' + e.stack + '</pre>'; }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 </script>
 </body>
 </html>
